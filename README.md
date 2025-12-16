@@ -52,18 +52,17 @@ Explainability Layer – Converts decisions into human-readable explanations
 
 Response Layer – Structured JSON output
 
-🖼️ Application Screenshots
-🔹 Explainable Output View
+```md
+## 🖼️ Application Screenshots
 
-Shows how the system presents decisions along with clear reasoning.
+### 🔹 Explainable Output View
+![Explainable Output](images/XAI-1.png)
 
-🔹 Document Analysis Workflow
+### 🔹 Document Analysis Workflow
+![Document Analysis](images/XAI-2.png)
 
-Illustrates document ingestion and AI-assisted reasoning flow.
-
-🔹 Structured Decision Response
-
-Demonstrates structured, interpretable output suitable for downstream use.
+### 🔹 Structured Decision Response
+![Decision Response](images/XAI-3.png)
 
 🛠️ Tech Stack
 
