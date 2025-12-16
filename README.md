@@ -18,20 +18,24 @@ Returning structured, explainable outputs that justify each decision
 This project emphasizes clarity, reliability, and real-world usability over opaque model predictions.
 
 🎯 Key Features
-
 📄 Document Ingestion
+
 Supports PDF, DOCX, and TXT files with robust text extraction and validation.
 
 🧩 Explainable Decision Logic
+
 Combines rule-based reasoning with GenAI outputs to clearly explain why a decision was made.
 
 🔍 Structured Outputs
+
 Returns consistent, machine-readable responses suitable for downstream systems or UI consumption.
 
 ⚙️ Backend-First Design
+
 Built as a modular Flask application with clean separation of concerns.
 
 🛡️ Production-Ready Practices
+
 Error handling, logging, and environment-based configuration for reliability.
 
 🏗️ System Architecture
@@ -74,7 +78,8 @@ Data Handling: PDF/DOCX/TXT parsing, structured preprocessing
 Configuration: Environment variables (.env)
 
 Version Control: Git
- ```text
+```text
+
 📁 Project Structure
 XAI_DECISION_ASSISTANT/
 │
@@ -82,12 +87,22 @@ XAI_DECISION_ASSISTANT/
 ├── core_api.py              # Core decision & reasoning logic
 ├── config_openrouter.py     # AI provider configuration (env-based)
 ├── requirements.txt         # Project dependencies
+├── README.md                # Project documentation
+├── .gitignore               # Git ignore rules
+│
 ├── templates/               # HTML templates
 ├── static/                  # CSS and static assets
 ├── images/                  # Project screenshots
+│   ├── XAI-1.png
+│   ├── XAI-2.png
+│   └── XAI-3.png
 ├── logs/                    # Runtime logs (ignored in Git)
-└── .gitignore               # Git ignore rules
+└── venv/                    # Virtual environment (ignored in Git)
 ```
+
+
+Note: Sensitive configuration (API keys) is managed via environment variables and excluded from version control.
+
 ⚙️ Setup & Run Locally
 
 
@@ -147,6 +162,7 @@ API authentication and access control
 
 Koushik Yadagiri
 Python Engineer | Applied AI & Backend Systems
+
 🔗 GitHub: https://github.com/koushik1124
 
 🔗 LinkedIn: https://www.linkedin.com/in/koushik-yadagiri-bb3a14218
