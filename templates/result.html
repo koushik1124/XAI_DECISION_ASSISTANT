@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XAI Decision Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark.css') }}">
+</head>
+
+<body>
+<div class="container">
+
+    <h1>🧠 AI Result</h1>
+    <p class="query-box">❓ {{ query }}</p>
+
+    <!-- Universal (always shown) decision -->
+    <h2>✔ Final Decision</h2>
+    <div class="decision-box">{{ result.final_decision }}</div>
+
+    <!-- Confidence -->
+    <h2>🎯 Confidence Level</h2>
+    {% set cls = result.confidence_score.lower() %}
+    <div class="confidence-bar {{ cls }}"></div>
+    <p class="confidence-text">Confidence: {{ result.confidence_score }}</p>
+
+    <!-- Key Factors -->
+    <h2>📊 Key Factors Behind Decision</h2>
+    {% if result.key_factors %}
+        <ul class="pill-list">
+        {% for factor in result.key_factors %}
+            <li class="pill">{{ factor }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No key factors returned.</p>
+    {% endif %}
+
+    <!-- Evidence -->
+    <h2>🔍 Evidence from Input</h2>
+    {% if evidence %}
+        {% for ev in evidence %}
+        <details class="expander">
+            <summary>Evidence: {{ ev.factor }}</summary>
+            <p class="evidence-box">...{{ ev.snippet }}...</p>
+        </details>
+        {% endfor %}
+    {% else %}
+        <p>No direct evidence found.</p>
+    {% endif %}
+
+    <!-- Fairness -->
+    <h2>⚖ Fairness Check</h2>
+    {% if fairness %}
+        <table class="fair-table">
+            <tr>
+                <th>Category</th>
+                <th>Detected Term</th>
+                <th>Risk</th>
+            </tr>
+            {% for hit in fairness %}
+            <tr>
+                <td>{{ hit.Category }}</td>
+                <td>{{ hit.Term }}</td>
+                <td>{{ hit.Risk }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <p class="warning">⚠ Sensitive attributes detected — review fairness before approval.</p>
+    {% else %}
+        <p class="success">✓ No fairness concerns detected</p>
+    {% endif %}
+
+    <!-- 🧪 Fairness Sandbox: Bias Simulation -->
+    {% if fairness %}
+    <h2>🧪 Fairness Sandbox (What-if Simulation)</h2>
+    <p>You can adjust sensitive attributes below and simulate how the decision might change. This helps you assess whether the model may be sensitive to protected attributes. The result is a neutral risk signal — human review is still required.</p>
+
+    <form action="{{ url_for('simulate_bias') }}" method="POST" class="sandbox-form">
+        <!-- Hidden context -->
+        <input type="hidden" name="query" value="{{ query }}">
+        <input type="hidden" name="combined_input" value="{{ combined_input|e }}">
+        <input type="hidden" name="original_result" value='{{ result|tojson }}'>
+        <input type="hidden" name="original_reasoning" value="{{ result.reasoning_summary|e }}">
+        <input type="hidden" name="fair_count" value="{{ fairness|length }}">
+
+        <table class="fair-table">
+            <tr>
+                <th>Category</th>
+                <th>Original Term</th>
+                <th>Replacement (Dropdown)</th>
+                <th>Custom Replacement (Optional)</th>
+            </tr>
+            {% for hit in fairness %}
+            <tr>
+                <td>{{ hit.Category }}</td>
+                <td>
+                    {{ hit.Term }}
+                    <input type="hidden" name="term_{{ loop.index0 }}" value="{{ hit.Term }}">
+                </td>
+                <td>
+                    <select name="replacement_choice_{{ loop.index0 }}">
+                        <option value="">-- Keep as is --</option>
+
+                        {% if hit.Category == 'Gender' %}
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                            <option value="Prefer Not to Say">Prefer Not to Say</option>
+
+                        {% elif hit.Category == 'Age' %}
+                            <option value="Young">Young</option>
+                            <option value="Adult">Adult</option>
+                            <option value="Senior">Senior</option>
+                            <option value="Prefer Not to Say">Prefer Not to Say</option>
+
+                        {% elif hit.Category == 'Religion' %}
+                            <option value="Hindu">Hindu</option>
+                            <option value="Muslim">Muslim</option>
+                            <option value="Christian">Christian</option>
+                            <option value="Sikh">Sikh</option>
+                            <option value="Other">Other</option>
+                            <option value="Prefer Not to Say">Prefer Not to Say</option>
+
+                        {% elif hit.Category == 'Race' or hit.Category == 'Race/Ethnicity' %}
+                            <option value="Asian">Asian</option>
+                            <option value="Black">Black</option>
+                            <option value="White">White</option>
+                            <option value="Latino">Latino</option>
+                            <option value="Other">Other</option>
+                            <option value="Prefer Not to Say">Prefer Not to Say</option>
+
+                        {% else %}
+                            <option value="Prefer Not to Say">Prefer Not to Say</option>
+                        {% endif %}
+
+                        <option value="CUSTOM">-- Custom Value Below --</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text"
+                           name="custom_{{ loop.index0 }}"
+                           placeholder="Type custom replacement (optional)">
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <button type="submit" class="submit-btn" style="margin-top:12px;">
+            🔁 Run Fairness Simulation
+        </button>
+    </form>
+    {% endif %}
+
+    <!-- 🧪 Fairness Impact Analysis (only shown after simulation) -->
+    {% if simulation %}
+        <h2>📊 Fairness Impact Analysis</h2>
+
+        <table class="fair-table">
+            <tr>
+                <th></th>
+                <th>Original</th>
+                <th>After Simulation</th>
+            </tr>
+            <tr>
+                <td>Decision</td>
+                <td>{{ simulation.original_decision }}</td>
+                <td>{{ simulation.modified_decision }}</td>
+            </tr>
+            <tr>
+                <td>Confidence</td>
+                <td>{{ simulation.original_confidence }}</td>
+                <td>{{ simulation.modified_confidence }}</td>
+            </tr>
+            <tr>
+                <td># Key Factors</td>
+                <td>{{ simulation.original_key_factors|length }}</td>
+                <td>{{ simulation.modified_key_factors|length }}</td>
+            </tr>
+        </table>
+
+        {% if simulation.decision_changed %}
+            <p class="warning">
+                ⚠ The decision changed after modifying sensitive attributes. This may indicate that the model's outcome
+                is influenced by protected attributes. Please review carefully before finalizing the decision.
+            </p>
+        {% else %}
+            <p class="success">
+                ✓ The decision remained stable after modifying sensitive attributes. This suggests lower sensitivity to
+                these attributes, but human oversight is still recommended.
+            </p>
+        {% endif %}
+
+        <!-- Optional: show modified fairness & evidence -->
+        {% if sim_fairness %}
+            <h3>Fairness After Simulation</h3>
+            <table class="fair-table">
+                <tr>
+                    <th>Category</th>
+                    <th>Detected Term</th>
+                    <th>Risk</th>
+                </tr>
+                {% for hit in sim_fairness %}
+                <tr>
+                    <td>{{ hit.Category }}</td>
+                    <td>{{ hit.Term }}</td>
+                    <td>{{ hit.Risk }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+
+        {% if sim_evidence %}
+            <h3>Evidence After Simulation</h3>
+            {% for ev in sim_evidence %}
+                <details class="expander">
+                    <summary>Evidence: {{ ev.factor }}</summary>
+                    <p class="evidence-box">...{{ ev.snippet }}...</p>
+                </details>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+
+    <!-- Explanation Summary -->
+    <h2>🧠 Explanation Summary</h2>
+    <p class="reasoning">{{ result.reasoning_summary }}</p>
+
+    <!-- Human Control -->
+    <h2>🧠 Your Response</h2>
+    <p>Select decision → then submit feedback.</p>
+
+    <form action="/feedback" method="POST">
+        <input type="hidden" name="query" value="{{ query }}">
+        <input type="hidden" name="decision" value="{{ result.final_decision }}">
+        <input type="hidden" name="reasoning" value="{{ result.reasoning_summary }}">
+        <input type="hidden" id="action-input" name="action" value="No Action">
+
+        <div class="btn-group">
+            <button type="button" class="confirm-btn" onclick="setAction('Accepted')">✔ Accept</button>
+            <button type="button" class="reject-btn" onclick="setAction('Rejected')">❌ Reject</button>
+            <button type="button" class="modify-btn" onclick="setAction('Modified')">✏ Modify</button>
+        </div>
+
+        <p id="chosen-action" style="margin-top:10px; font-size:16px; color:#00eaff;"></p>
+
+        <div id="feedback-section" style="display:none; margin-top:20px;">
+            <h2>🗣 Feedback</h2>
+            <select name="feedback" required>
+                <option value="">— Select Feedback —</option>
+                <option value="Accurate">😊 Accurate</option>
+                <option value="Unclear">😕 Unclear</option>
+                <option value="Incorrect">🚫 Incorrect</option>
+            </select>
+
+            <button type="submit" class="submit-btn">Submit Feedback</button>
+        </div>
+    </form>
+
+    <script>
+        function setAction(action) {
+            document.getElementById('action-input').value = action;
+            document.getElementById('chosen-action').innerHTML =
+                "Action Selected: <strong>" + action + "</strong>";
+            document.getElementById('feedback-section').style.display = 'block';
+        }
+    </script>
+
+    <a class="back-btn" href="/">⬅ Ask Another Question</a>
+
+</div>
+</body>
+</html>

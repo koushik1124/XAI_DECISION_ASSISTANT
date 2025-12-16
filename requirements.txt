@@ -1,0 +1,7 @@
+openai
+gradio
+python-dotenv
+streamlit
+requests
+PyMupdf
+fitz

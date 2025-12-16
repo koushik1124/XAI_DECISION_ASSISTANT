@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XAI Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark.css') }}">
+</head>
+<body>
+
+<div class="container center">
+
+    <h1>🤖 Explainable AI Decision Assistant</h1>
+    <p>Ask a question or upload a document for explainable analysis.</p>
+
+    {% if error %}
+    <div class="alert">{{ error }}</div>
+    {% endif %}
+
+    <form action="/" method="POST" enctype="multipart/form-data">
+
+        <!-- Text Query Box -->
+        <textarea name="query" placeholder="Enter your question... (optional if file uploaded)" rows="4"></textarea>
+
+        <!-- Add File Toggle -->
+        <button type="button" id="toggle-upload" class="toggle-btn">📎 Add File</button>
+
+        <!-- File Upload Animation Panel -->
+        <div id="file-upload-section" class="upload-panel">
+            <label class="upload-label">Select a document:</label>
+            <input type="file" name="uploaded_file" accept=".pdf,.txt,.csv,.doc,.docx,.xlsx,.xls">
+            <p class="file-note">Supported: PDF, TXT, CSV, Excel, Word</p>
+        </div>
+
+        <button class="ask-btn" type="submit">Analyze</button>
+    </form>
+</div>
+
+<script>
+const toggle = document.getElementById("toggle-upload");
+const panel = document.getElementById("file-upload-section");
+
+toggle.addEventListener("click", () => {
+    panel.classList.toggle("show");
+});
+</script>
+
+</body>
+</html>

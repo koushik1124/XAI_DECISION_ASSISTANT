@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Action Recorded</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark.css') }}">
+</head>
+<body>
+<div class="container">
+
+    <h1>📝 Feedback Saved</h1>
+
+    <p class="success">✔ You marked this decision as: <strong>{{ action }}</strong></p>
+
+    {% if feedback %}
+        <p class="success">🗣 Feedback: <strong>{{ feedback }}</strong></p>
+    {% endif %}
+
+    <a class="back-btn" href="/">⬅ Ask Another Question</a>
+
+</div>
+</body>
+</html>
