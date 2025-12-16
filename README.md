@@ -44,10 +44,10 @@ The project emphasizes **clarity, reliability, and real-world usability**.
 ### Explainable Output View
 ![Explainable Output](images/XAI-1.png)
 
-### Document Analysis Workflow
+### Final decision key Insights
 ![Document Analysis](images/XAI-2.png)
 
-### Structured Decision Response
+### Response Feedback
 ![Decision Response](images/XAI-3.png)
 
 ---
