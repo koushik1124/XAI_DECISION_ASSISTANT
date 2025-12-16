@@ -74,7 +74,7 @@ Data Handling: PDF/DOCX/TXT parsing, structured preprocessing
 Configuration: Environment variables (.env)
 
 Version Control: Git
-""" text
+ ```text
 📁 Project Structure
 XAI_DECISION_ASSISTANT/
 │
@@ -87,7 +87,7 @@ XAI_DECISION_ASSISTANT/
 ├── images/                  # Project screenshots
 ├── logs/                    # Runtime logs (ignored in Git)
 └── .gitignore               # Git ignore rules
-"""
+```
 ⚙️ Setup & Run Locally
 1️⃣ Clone the repository
 git clone https://github.com/koushik1124/XAI_DECISION_ASSISTANT.git
