@@ -89,6 +89,8 @@ XAI_DECISION_ASSISTANT/
 └── .gitignore               # Git ignore rules
 ```
 ⚙️ Setup & Run Locally
+
+
 1️⃣ Clone the repository
 git clone https://github.com/koushik1124/XAI_DECISION_ASSISTANT.git
 cd XAI_DECISION_ASSISTANT
